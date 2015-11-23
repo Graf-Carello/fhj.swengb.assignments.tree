@@ -78,7 +78,9 @@ object MathUtil {
     * @return
     */
   def round(value: Double): Double = {
-    ???
+    //???
+    //returns value as Double rounded to 3 decimals
+    "%.3f".format(value).toDouble
   }
 
   /**
@@ -88,7 +90,9 @@ object MathUtil {
     * @return
     */
   def toRadiants(angle: AngleInDegrees): AngleInRadiants = {
-   ???
+   //???
+    val angleInRadiants = (Math.PI / 180) * angle.toString.toInt
+    angleInRadiants
   }
 }
 
