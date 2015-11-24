@@ -1,9 +1,11 @@
-package fhj.swengb.assignments.tree.rladstaetter
+package fhj.swengb.assignments.tree.fgraf
 
 import javafx.scene.paint.Color
 
+import com.sun.org.apache.bcel.internal.generic.L2D
 import org.junit.Assert._
 import org.junit.Test
+import sun.reflect.generics.tree.Tree
 
 import scala.util.Try
 
@@ -23,11 +25,20 @@ class TreeAssignmentTest {
       Node(L2D(Pt2D(100.0, 0.0), Pt2D(199.985, 1.745), colorMap(0)))))
 
 
+
   @Test def testRound(): Unit = {
     assertEquals(0.001, MathUtil.round(0.001232), 0.0)
     assertEquals(0.002, MathUtil.round(0.001532), 0.0)
     assertEquals(1.339, MathUtil.round(1.339), 0.0)
   }
+
+  @Test def testRadiants(): Unit = {
+    val testAngle = 45
+    val testRadiant = MathUtil.toRadiants(testAngle)
+    //println(testRadiant)
+    assert(0.7853981633974483 == testRadiant)
+  }
+
 
   @Test def treeSize0(): Unit = {
     val t: Tree[L2D] = Graph.mkGraph(Pt2D(0, 0), 0, 100, 0, 1, 0)

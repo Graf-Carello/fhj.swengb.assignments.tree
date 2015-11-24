@@ -1,6 +1,8 @@
-package fhj.swengb.assignments.tree.rladstaetter
+package fhj.swengb.assignments.tree.fgraf
 
 import javafx.scene.paint.Color
+
+import sun.reflect.generics.tree.Tree
 
 import scala.math.BigDecimal.RoundingMode
 import scala.util.Random
@@ -39,8 +41,10 @@ object Graph {
     * @param convert a converter function
     * @return
     */
-  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] = {
-  ???
+  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] = tree match{
+      //???
+    case Node(value) => Seq(convert(value))
+    case Branch(left, right) => traverse(left)(convert) ++ traverse(right)(convert)
   }
 
   /**
@@ -65,6 +69,7 @@ object Graph {
               colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
     assert(treeDepth <= colorMap.size, s"Treedepth higher than color mappings - bailing out ...")
     ???
+
  }
 
 }
@@ -80,7 +85,8 @@ object MathUtil {
   def round(value: Double): Double = {
     //???
     //returns value as Double rounded to 3 decimals
-    "%.3f".format(value).toDouble
+    val valueRound = BigDecimal(value).setScale(3, RoundingMode.HALF_UP).toDouble
+    valueRound
   }
 
   /**
@@ -91,7 +97,7 @@ object MathUtil {
     */
   def toRadiants(angle: AngleInDegrees): AngleInRadiants = {
    //???
-    val angleInRadiants = (Math.PI / 180) * angle.toString.toInt
+    val angleInRadiants = (Math.PI / 180) * angle
     angleInRadiants
   }
 }
@@ -112,7 +118,11 @@ object L2D {
     * @return
     */
   def apply(start: Pt2D, angle: AngleInDegrees, length: Double, color: Color): L2D = {
-    ???
+    //???
+    val pointX = start.x + round(math.cos(toRadiants(angle)) * length)
+    val pointY = start.y + round(math.sin(toRadiants(angle)) * length)
+    val end = Pt2D(pointX, pointY)
+    L2D(start, end, color)
   }
 
 
