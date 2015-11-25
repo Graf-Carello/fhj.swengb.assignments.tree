@@ -68,8 +68,21 @@ object Graph {
               angle: Double = 45.0,
               colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
     assert(treeDepth <= colorMap.size, s"Treedepth higher than color mappings - bailing out ...")
-    ???
+    //???
 
+    def mkGraphTailRec(startPoint: L2D, acc: Int): Tree[L2D] = {
+      acc match {
+        case lastNode if (acc == treeDepth) => Branch(Node(startPoint), Branch(Node(startPoint.left(factor, angle, colorMap(acc - 1))), Node(startPoint.right(factor, angle, colorMap(acc - 1)))))
+        case _ => Branch(Node(startPoint), Branch(mkGraphTailRec(startPoint.left(factor, angle, colorMap(acc - 1)), acc + 1), mkGraphTailRec(startPoint.right(factor, angle, colorMap(acc - 1)), acc + 1)))
+      }
+    }
+
+    val acc = 1
+
+    treeDepth match {
+      case root if (treeDepth == 0) => Node(L2D.apply(start, initialAngle, length, colorMap(0)))
+      case _ => mkGraphTailRec(L2D(start, initialAngle, length, colorMap(acc - 1)), acc)
+    }
  }
 
 }
