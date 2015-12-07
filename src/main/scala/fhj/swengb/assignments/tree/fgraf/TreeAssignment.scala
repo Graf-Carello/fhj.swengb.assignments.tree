@@ -1,8 +1,6 @@
-package fhj.swengb.assignments.tree.fgraf
+package fhj.swengb.assignments.tree.rladstaetter
 
 import javafx.scene.paint.Color
-
-import sun.reflect.generics.tree.Tree
 
 import scala.math.BigDecimal.RoundingMode
 import scala.util.Random
@@ -41,10 +39,11 @@ object Graph {
     * @param convert a converter function
     * @return
     */
-  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] = tree match{
-      //???
-    case Node(value) => Seq(convert(value))
-    case Branch(left, right) => traverse(left)(convert) ++ traverse(right)(convert)
+  def traverse[A, B](tree: Tree[A])(convert: A => B): Seq[B] = {
+    tree match {
+      case Node(l) => Seq(convert(l))
+      case Branch(left, right) => traverse(left)(convert) ++ traverse(right)(convert)
+    }
   }
 
   /**
@@ -68,22 +67,20 @@ object Graph {
               angle: Double = 45.0,
               colorMap: Map[Int, Color] = Graph.colorMap): Tree[L2D] = {
     assert(treeDepth <= colorMap.size, s"Treedepth higher than color mappings - bailing out ...")
-    //???
+    // NOTE: you have to construct a tree, not deconstruct it!
 
-    def mkGraphTailRec(startPoint: L2D, acc: Int): Tree[L2D] = {
-      acc match {
-        case lastNode if (acc == treeDepth) => Branch(Node(startPoint), Branch(Node(startPoint.left(factor, angle, colorMap(acc - 1))), Node(startPoint.right(factor, angle, colorMap(acc - 1)))))
-        case _ => Branch(Node(startPoint), Branch(mkGraphTailRec(startPoint.left(factor, angle, colorMap(acc - 1)), acc + 1), mkGraphTailRec(startPoint.right(factor, angle, colorMap(acc - 1)), acc + 1)))
+    def loop(depth: Int, parent: L2D): Tree[L2D] = {
+      depth match {
+        case 0 => Node(parent)
+        case d => Branch(Node(parent),
+          Branch(
+            loop(d - 1, parent.left(factor, angle, colorMap(treeDepth - d))),
+            loop(d - 1, parent.right(factor, angle, colorMap(treeDepth - d)))))
       }
     }
 
-    val acc = 1
-
-    treeDepth match {
-      case root if (treeDepth == 0) => Node(L2D.apply(start, initialAngle, length, colorMap(0)))
-      case _ => mkGraphTailRec(L2D(start, initialAngle, length, colorMap(acc - 1)), acc)
-    }
- }
+    loop(treeDepth, L2D(start, initialAngle, length, colorMap(0)))
+  }
 
 }
 
@@ -96,10 +93,7 @@ object MathUtil {
     * @return
     */
   def round(value: Double): Double = {
-    //???
-    //returns value as Double rounded to 3 decimals
-    val valueRound = BigDecimal(value).setScale(3, RoundingMode.HALF_UP).toDouble
-    valueRound
+    BigDecimal(value).setScale(3, RoundingMode.HALF_UP).doubleValue()
   }
 
   /**
@@ -109,9 +103,7 @@ object MathUtil {
     * @return
     */
   def toRadiants(angle: AngleInDegrees): AngleInRadiants = {
-   //???
-    val angleInRadiants = (Math.PI / 180) * angle
-    angleInRadiants
+    angle * Math.PI / 180
   }
 }
 
@@ -131,11 +123,10 @@ object L2D {
     * @return
     */
   def apply(start: Pt2D, angle: AngleInDegrees, length: Double, color: Color): L2D = {
-    //???
-    val pointX = start.x + round(math.cos(toRadiants(angle)) * length)
-    val pointY = start.y + round(math.sin(toRadiants(angle)) * length)
-    val end = Pt2D(pointX, pointY)
-    L2D(start, end, color)
+    val angleInRadiants = toRadiants(angle)
+    val end = Pt2D(start.x + length * Math.cos(angleInRadiants),
+      start.y + length * Math.sin(angleInRadiants)).normed
+    new L2D(start, end, color)
   }
 
 
